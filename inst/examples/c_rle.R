@@ -4,9 +4,11 @@ z <- c(rep(1.2, 3), rep(2.4, 2))
 
 source("./inst/examples/csource.R")  # defines csource
 
-csource("./inst/examples/c_rle.c")
+csource("./inst/examples/c_rle1.c") # only returns one vector
+csource("./inst/examples/c_rle.c") # most complete version
 
-c_rle(x)
-c_rle(y)
-c_rle(z)
+c_rle1(x)
+c_rle1(y)
+c_rle1(z)
+
 

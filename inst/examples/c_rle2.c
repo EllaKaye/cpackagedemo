@@ -1,4 +1,4 @@
-SEXP C_rle(SEXP x)
+SEXP C_rle2(SEXP x)
 {
 	// no need to call PROTECT(x), it is already in use
 	if (!Rf_isReal(x)) Rf_error("`x` should be of the type 'double'");
@@ -18,8 +18,8 @@ SEXP C_rle(SEXP x)
 	int rl = 1; // current run length
 	
 	for (size_t i = 0; i < n - 1; ++i) {
-		// COULD DO: DEAL WITH NA
-		
+		// TODO: DEAL WITH NA
+		// if (ISNA(xp[i])) yp[i] = xp[i];  // NA_REAL 
 		// run continues
 		if (xp[i] == xp[i + 1]) {
 			rl++;
@@ -37,7 +37,7 @@ SEXP C_rle(SEXP x)
 	// after loop, deal with final value
 	if (xp[n - 2] == xp[n - 1]) {
   	// have already added 1 to rl in last loop iteration
-		// and index is in right place too
+		// and index has been updated too
 		lengthsp[index] = rl; 
 		valuesp[index] = xp[n - 1];
 	} else {
@@ -45,7 +45,7 @@ SEXP C_rle(SEXP x)
 		valuesp[index] = xp[n - 1];
 	}
 	
-	// COULD DO: can return if index == n - 1
+	// TODO: can return if index == n - 1
 	
 	// now restrict to length of rle
 	SEXP values_rle = PROTECT(Rf_allocVector(REALSXP, index + 1));  // won't be GC'd
@@ -62,17 +62,17 @@ SEXP C_rle(SEXP x)
 	SET_VECTOR_ELT(rle, 0, lengths_rle);
 	SET_VECTOR_ELT(rle, 1, values_rle);	
 	
-	UNPROTECT(5);  // pops five objects from the protect stack;
-	// does not trigger garbage collection, so we can return `rle` now
+	UNPROTECT(5);  // pops two object from the protect stack;
+	// does not trigger garbage collection, so we can return `y` now
 	
 	return rle;  // R will retrieve and protect it
 }
 
 /* R
-c_rle <- function(x)
+c_rle2 <- function(x)
  {
  if (!is.double(x)) x <- as.double(x)
-        s <- .Call("C_rle", x, PACKAGE="c_rle")
+        s <- .Call("C_rle2", x, PACKAGE="c_rle2")
 				names(s) <- c("lengths", "values")
 				class(s) <- "rle"
 				s
